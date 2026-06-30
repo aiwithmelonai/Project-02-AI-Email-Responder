@@ -1,0 +1,161 @@
+{
+  "name": "02 — AI Email Responder",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7bbe26ab-a034-4f3f-88db-937b72bf4f87",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "afe835c8-7ff3-49d3-9395-f6cd96a1be52",
+              "name": "sender_name",
+              "value": "Sarah",
+              "type": "string"
+            },
+            {
+              "id": "b75229fb-1574-4fa0-94c4-1d6c10c7745a",
+              "name": "email_subject",
+              "value": "Question about your automation services",
+              "type": "string"
+            },
+            {
+              "id": "45437ce2-55aa-42c1-90c9-38f355a8d39a",
+              "name": "email_body",
+              "value": "Hi, I saw your post about AI automations. Do you build custom workflows for small businesses? I run a local bakery and want to automate my Instagram posting. What would that cost and how long would it take?",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "63d88666-c1f8-4517-a5a5-6e6c4c4f73db",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"claude-sonnet-4-6\",\n  \"max_tokens\": 1024,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"You are drafting an email reply on behalf of MELON AI, an AI automation consultancy. Write a warm, professional, concise reply to the email below. Keep it under 150 words. Sign off as 'MELON AI Team'.\\n\\nFrom: Sarah\\nSubject: Question about your automation services\\nMessage: Hi, I saw your post about AI automations. Do you build custom workflows for small businesses? I run a local bakery and want to automate my Instagram posting. What would that cost and how long would it take?\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        384,
+        0
+      ],
+      "id": "722b6a48-adc4-4ab8-a1a2-30f79042b392",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "NcocoSQcqc0OZQJ1",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8bbe4947-3565-448d-8aa5-e6476ee2933f",
+              "name": "draft_reply",
+              "value": "={{ $json.content[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        608,
+        0
+      ],
+      "id": "5e507340-a210-4050-9939-6c0053b01336",
+      "name": "Edit Fields1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "cdf2e813-411f-44bc-9c49-f9c17eacd331",
+  "meta": {
+    "instanceId": "6f857df924504ee713843b67326a6980a31ee4a64fd6b91cf25e9e97fca18dea"
+  },
+  "nodeGroups": [],
+  "id": "vt2Up85AcSKgUHrr",
+  "tags": []
+}
